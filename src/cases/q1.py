@@ -1,7 +1,7 @@
 
 from models.graph import Graph
 
-def main():
+def q1():
 
     result =[]
     def callback(graph, node_id):

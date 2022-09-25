@@ -1,5 +1,6 @@
 from models.node import Node
 from models.edge import Edge
+from sys import maxsize
 
 
 class Graph:
@@ -28,10 +29,10 @@ class Graph:
                 if not visited[adj_node_id]:
                     stack.append(adj_node_id)
 
-    def find_parent(self, parent, node_id):
+    def __find_parent(self, parent, node_id):
         if node_id == parent[node_id]:
             return node_id
-        return self.find_parent(parent[node_id])
+        return self.__find_parent(parent[node_id])
 
     def kruskal(self, callback):
         merged_edge_list = []
@@ -48,8 +49,8 @@ class Graph:
             rank[node.id] = 0
 
         for edge in merged_edge_list:
-            source_parent = self.find_parent(parent, edge.source)
-            target_parent = self.find_parent(parent, edge.target)
+            source_parent = self.__find_parent(parent, edge.source)
+            target_parent = self.__find_parent(parent, edge.target)
 
             if source_parent != target_parent:
                 if rank[source_parent] < rank[target_parent]:
@@ -59,6 +60,44 @@ class Graph:
                     parent[target_parent] = source_parent
                     rank[source_parent] += 1
                 callback(edge)
+    
+    def __min_key(self, key, mstSet):
+        min_value = maxsize
+
+        for node in self.nodes.values():
+            if key[node.id] < min_value and mstSet[node.id]:
+                min_value = key[node.id]
+                min_node = node
+    
+        return min_node
+
+
+    def prim(self, start, callback):
+        key = {}
+        parent ={}
+        mstSet ={}
+
+        for node in self.nodes.values():
+            key[node.id] = maxsize
+            parent[node.id] = None
+            mstSet[node.id] = False
+        
+        key[start] = 0
+        parent[start] = -1
+
+        for node in self.nodes.values():
+            min_node = self.__min_key(key,mstSet)
+            mstSet[min_node.id] = True
+
+            adjacency = self.adjacency_list[min_node.id]
+
+            for edge in adjacency.values():
+                key[edge.target] = edge.weight
+                parent[edge.target] = min_node.id
+        callback(parent)
+
+
+
 
 
 
