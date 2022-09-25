@@ -1,33 +1,29 @@
 import csv
 
-def read_matrix_from_csv(filename):
-    matrix = []
-    rows_size = -1
+from src.models.edge import Edge
+from src.models.graph import Graph
+from src.models.node import Node
+
+
+def parse_matrix_from_csv_to_graph(filename):
+    nodes = {}
+    adjacency_list = {}
+
     with open(filename, "r") as file:
         csvreader = csv.reader(file)
-        for row in csvreader:
-            matrix_row = []
-            for cell in row:
-                value = None
-                if cell == "1":
-                    value = True
-                if cell == "0":
-                    value = False
-
-                if value == None:
+        for i, raw_row in enumerate(csvreader):
+            if not len(raw_row): continue
+            node = Node(i)
+            nodes[node.id] = node
+            for j, cell in enumerate(raw_row[0].split(';')):
+                if cell == "" or cell == "0":
                     continue
-                matrix_row.append(value)
-            if len(matrix_row) != rows_size and rows_size != -1:
-                raise Exception(
-                    "Invalid matrix in file, the matrix rows should have the same size."
-                )
-            else:
-                rows_size = len(matrix_row)
-                matrix.append(matrix_row)
+                
+                edge = Edge(i, j, float(cell))
 
-    if len(matrix) != rows_size:
-        raise Exception(
-            "Invalid matrix in file, the matrix should have the same size of the rows."
-        )
+                if i not in adjacency_list:
+                    adjacency_list[i] = []
 
-    return matrix
+                adjacency_list[i].append(edge)
+
+    return Graph(nodes,adjacency_list)

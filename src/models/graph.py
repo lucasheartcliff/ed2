@@ -1,5 +1,5 @@
-from models.node import Node
-from models.edge import Edge
+from .node import Node
+from .edge import Edge
 from sys import maxsize
 
 
@@ -65,7 +65,7 @@ class Graph:
         min_value = maxsize
 
         for node in self.nodes.values():
-            if key[node.id] < min_value and visited[node.id]:
+            if key[node.id] < min_value and not visited[node.id]:
                 min_value = key[node.id]
                 min_node = node
 
@@ -90,11 +90,11 @@ class Graph:
 
             adjacency = self.adjacency_list[min_node.id]
 
-            for edge in adjacency.values():
-                if mstSet[edge.target] and key[edge.target] > edge.weight:
+            for edge in adjacency:
+                if not mstSet[edge.target] and key[edge.target] > edge.weight:
                     key[edge.target] = edge.weight
                     parent[edge.target] = min_node.id
-        callback(parent)
+                    callback(self,edge, key, parent)
 
     def dijkstra(self, start, callback):
         key = {}
@@ -112,7 +112,8 @@ class Graph:
 
             adjacency = self.adjacency_list[min_node.id]
 
-            for edge in adjacency.values():
-                if not visited[edge.target] and key[edge.target] > (key[edge.source] + edge.weight):
-                    key[edge.target] = edge.weight
+            for edge in adjacency:
+                sum_dist = key[edge.source] + edge.weight
+                if not visited[edge.target] and key[edge.target] > sum_dist:
+                    key[edge.target] = sum_dist
         callback(key)
