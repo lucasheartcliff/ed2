@@ -4,7 +4,7 @@ from sys import maxsize
 
 
 class Graph:
-    nodes: dict[any,Node]
+    nodes: dict[any, Node]
     adjacency_list: dict[any, list[Edge]]
 
     def __init__(self, nodes, adjacency_list):
@@ -55,50 +55,64 @@ class Graph:
             if source_parent != target_parent:
                 if rank[source_parent] < rank[target_parent]:
                     parent[source_parent] = target_parent
-                    rank[target_parent] +=1
+                    rank[target_parent] += 1
                 else:
                     parent[target_parent] = source_parent
                     rank[source_parent] += 1
                 callback(edge)
-    
-    def __min_key(self, key, mstSet):
+
+    def __min_key(self, key, visited):
         min_value = maxsize
 
         for node in self.nodes.values():
-            if key[node.id] < min_value and mstSet[node.id]:
+            if key[node.id] < min_value and visited[node.id]:
                 min_value = key[node.id]
                 min_node = node
-    
-        return min_node
 
+        return min_node
 
     def prim(self, start, callback):
         key = {}
-        parent ={}
-        mstSet ={}
+        parent = {}
+        mstSet = {}
 
         for node in self.nodes.values():
             key[node.id] = maxsize
             parent[node.id] = None
             mstSet[node.id] = False
-        
+
         key[start] = 0
         parent[start] = -1
 
         for node in self.nodes.values():
-            min_node = self.__min_key(key,mstSet)
+            min_node = self.__min_key(key, mstSet)
             mstSet[min_node.id] = True
 
             adjacency = self.adjacency_list[min_node.id]
 
             for edge in adjacency.values():
-                key[edge.target] = edge.weight
-                parent[edge.target] = min_node.id
+                if mstSet[edge.target] and key[edge.target] > edge.weight:
+                    key[edge.target] = edge.weight
+                    parent[edge.target] = min_node.id
         callback(parent)
 
+    def dijkstra(self, start, callback):
+        key = {}
+        visited = {}
 
+        for node in self.nodes.values():
+            key[node.id] = maxsize
+            visited[node.id] = False
 
+        key[start] = 0
 
+        for node in self.nodes.values():
+            min_node = self.__min_key(key, visited)
+            visited[min_node.id] = True
 
+            adjacency = self.adjacency_list[min_node.id]
 
-
+            for edge in adjacency.values():
+                if not visited[edge.target] and key[edge.target] > (key[edge.source] + edge.weight):
+                    key[edge.target] = edge.weight
+        callback(key)
