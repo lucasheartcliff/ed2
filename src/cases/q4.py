@@ -4,6 +4,8 @@ import os
 
 
 def q4(filename):
+    print()
+    print("Q4")
     edges: list[Edge] = []
 
     def callback(graph, edge, key, parent):

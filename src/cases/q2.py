@@ -23,6 +23,8 @@ def equals_tolerance(a, b, tolerance):
 
 
 def q2(filename):
+    print()
+    print("Q2")
     stop_points = [14, 25, 26]
     start_point = 7
 

@@ -36,7 +36,7 @@ class Graph:
     def __find_parent(self, parent, node_id):
         if node_id == parent[node_id]:
             return node_id
-        return self.__find_parent(parent[node_id])
+        return self.__find_parent(parent, parent[node_id])
 
     def kruskal(self, callback):
         merged_edge_list = []
@@ -63,13 +63,13 @@ class Graph:
                 else:
                     parent[target_parent] = source_parent
                     rank[source_parent] += 1
-                callback(edge)
+                callback(self, edge)
 
     def __min_key(self, key, visited):
         min_value = maxsize
 
         for node in self.nodes.values():
-            if node.id in key and key[node.id] < min_value and node.id not in  visited:
+            if node.id in key and key[node.id] < min_value and node.id not in visited:
                 min_value = key[node.id]
                 min_node = node
 
@@ -79,11 +79,6 @@ class Graph:
         key = {}
         parent = {}
         mstSet = {}
-
-        for node in self.nodes.values():
-            key[node.id] = maxsize
-            parent[node.id] = None
-            mstSet[node.id] = False
 
         key[start] = 0
         parent[start] = -1
@@ -95,7 +90,7 @@ class Graph:
             adjacency = self.adjacency_list[min_node.id]
 
             for edge in adjacency:
-                if not mstSet[edge.target] and key[edge.target] > edge.weight:
+                if edge.target not in mstSet and (edge.target not in key):
                     key[edge.target] = edge.weight
                     parent[edge.target] = min_node.id
                     callback(self, edge, key, parent)
@@ -114,6 +109,11 @@ class Graph:
 
             for edge in adjacency:
                 sum_dist = key[edge.source] + edge.weight
-                if edge.target not in visited and (edge.target in key and key[edge.target] > sum_dist) or edge.target not in key:
+                if (
+                    edge.target not in visited
+                    and (edge.target in key and key[edge.target] > sum_dist)
+                    or edge.target not in key
+                ):
                     key[edge.target] = sum_dist
-                    if callback(self, key): return
+                    if callback(self, key):
+                        return

@@ -4,7 +4,8 @@ from utils.utils import parse_matrix_from_csv_to_graph
 import os
 
 def q1(filename):
-
+    print()
+    print("Q1")
     result =[]
     def callback(graph, node_id):
         node = graph.nodes[node_id]
