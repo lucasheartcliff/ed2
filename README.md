@@ -4,6 +4,10 @@
 
 This is a simples implementation of the questions described in de `REQUIREMENTS.pdf`
 
+## Requirements
+
+python with version 3.x
+
 ## Running
 
 To run this project run the following command:
