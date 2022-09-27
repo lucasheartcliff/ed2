@@ -15,7 +15,8 @@ def parse_matrix_from_csv_to_graph(filename):
             if not len(raw_row): continue
             node = Node(i)
             nodes[node.id] = node
-            for j, cell in enumerate(raw_row[0].split(';')):
+            
+            for j, cell in enumerate(raw_row):
                 if cell == "" or cell == "0":
                     continue
                 

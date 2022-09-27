@@ -12,9 +12,10 @@ def q1(filename):
         return node.id == 35
 
     graph = parse_matrix_from_csv_to_graph(os.path.abspath(filename))
-    graph.dfs(0,callback)
+
+    graph.dfs(1,callback)
 
     print("Position | Node")
     for index, node in enumerate(result):
-        print(str(index) + " | " + str(node.id + 1))
+        print(str(index) + " | " + str(node.id))
 

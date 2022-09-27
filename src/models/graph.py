@@ -19,14 +19,18 @@ class Graph:
         while len(stack) != 0:
             node_id = stack.pop()
 
-            if not visited[node_id]:
+            if node_id not in visited:
                 if callback(self, node_id):
                     break
                 visited[node_id] = True
 
-            for edge in self.adjacency_list[node_id]:
+            adjacency = (
+                self.adjacency_list[node_id] if node_id in self.adjacency_list else []
+            )
+
+            for edge in adjacency:
                 adj_node_id = edge.target
-                if not visited[adj_node_id]:
+                if adj_node_id not in visited:
                     stack.append(adj_node_id)
 
     def __find_parent(self, parent, node_id):
@@ -65,7 +69,7 @@ class Graph:
         min_value = maxsize
 
         for node in self.nodes.values():
-            if key[node.id] < min_value and not visited[node.id]:
+            if node.id in key and key[node.id] < min_value and node.id not in  visited:
                 min_value = key[node.id]
                 min_node = node
 
@@ -94,15 +98,11 @@ class Graph:
                 if not mstSet[edge.target] and key[edge.target] > edge.weight:
                     key[edge.target] = edge.weight
                     parent[edge.target] = min_node.id
-                    callback(self,edge, key, parent)
+                    callback(self, edge, key, parent)
 
     def dijkstra(self, start, callback):
         key = {}
         visited = {}
-
-        for node in self.nodes.values():
-            key[node.id] = maxsize
-            visited[node.id] = False
 
         key[start] = 0
 
@@ -114,6 +114,6 @@ class Graph:
 
             for edge in adjacency:
                 sum_dist = key[edge.source] + edge.weight
-                if not visited[edge.target] and key[edge.target] > sum_dist:
+                if edge.target not in visited and (edge.target in key and key[edge.target] > sum_dist) or edge.target not in key:
                     key[edge.target] = sum_dist
-        callback(key)
+                    if callback(self, key): return
